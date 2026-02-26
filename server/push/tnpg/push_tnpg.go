@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/tinode/chat/server/logs"
 	"github.com/tinode/chat/server/push"
@@ -31,6 +32,20 @@ const (
 )
 
 var handler Handler
+
+const maxPooledPostBodyCap = 1 << 16
+
+var postBodyPool = sync.Pool{
+	New: func() interface{} {
+		return new(bytes.Buffer)
+	},
+}
+
+var gzipWriterPool = sync.Pool{
+	New: func() interface{} {
+		return gzip.NewWriter(io.Discard)
+	},
+}
 
 // Handler represents state of TNPG push client.
 type Handler struct {
@@ -154,11 +169,24 @@ func (Handler) Init(jsonconf json.RawMessage) (bool, error) {
 	return true, nil
 }
 
-func postMessage(endpoint string, body any, config *configType) (*batchResponse, error) {
-	buf := new(bytes.Buffer)
-	gzw := gzip.NewWriter(buf)
+func postMessage(endpoint string, body interface{}, config *configType) (*batchResponse, error) {
+	buf := postBodyPool.Get().(*bytes.Buffer)
+	buf.Reset()
+	defer func() {
+		buf.Reset()
+		if cap(buf.Bytes()) > maxPooledPostBodyCap {
+			return
+		}
+		postBodyPool.Put(buf)
+	}()
+
+	gzw := gzipWriterPool.Get().(*gzip.Writer)
+	gzw.Reset(buf)
 	err := json.NewEncoder(gzw).Encode(body)
-	gzw.Close()
+	if closeErr := gzw.Close(); err == nil {
+		err = closeErr
+	}
+	gzipWriterPool.Put(gzw)
 	if err != nil {
 		return nil, err
 	}
