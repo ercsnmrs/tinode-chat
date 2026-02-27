@@ -171,7 +171,6 @@ func (Handler) Init(jsonconf json.RawMessage) (bool, error) {
 
 func postMessage(endpoint string, body interface{}, config *configType) (*batchResponse, error) {
 	buf := postBodyPool.Get().(*bytes.Buffer)
-	buf.Reset()
 	defer func() {
 		buf.Reset()
 		if cap(buf.Bytes()) > maxPooledPostBodyCap {
@@ -181,12 +180,15 @@ func postMessage(endpoint string, body interface{}, config *configType) (*batchR
 	}()
 
 	gzw := gzipWriterPool.Get().(*gzip.Writer)
+	defer func() {
+		gzw.Reset(io.Discard)
+		gzipWriterPool.Put(gzw)
+	}()
 	gzw.Reset(buf)
 	err := json.NewEncoder(gzw).Encode(body)
 	if closeErr := gzw.Close(); err == nil {
 		err = closeErr
 	}
-	gzipWriterPool.Put(gzw)
 	if err != nil {
 		return nil, err
 	}
