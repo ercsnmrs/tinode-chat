@@ -181,7 +181,7 @@ func (h *Hub) run() {
 				}
 				if globals.cluster != nil {
 					if t.isProxy {
-						t.proxy = make(chan *ClusterResp, 32)
+						t.proxy = make(chan *ClusterResp, 128)
 						t.masterNode = globals.cluster.ring.Get(t.name)
 					} else {
 						// It's a master topic. Make a channel for handling
