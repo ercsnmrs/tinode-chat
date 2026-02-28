@@ -36,14 +36,14 @@ var handler Handler
 const maxPooledPostBodyCap = 1 << 16
 
 var postBodyPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new(bytes.Buffer)
 	},
 }
 
 var gzipWriterPool = sync.Pool{
-	New: func() interface{} {
-		return gzip.NewWriter(io.Discard)
+	New: func() any {
+		return gzip.NewWriter(nil)
 	},
 }
 
@@ -169,7 +169,7 @@ func (Handler) Init(jsonconf json.RawMessage) (bool, error) {
 	return true, nil
 }
 
-func postMessage(endpoint string, body interface{}, config *configType) (*batchResponse, error) {
+func postMessage(endpoint string, body any, config *configType) (*batchResponse, error) {
 	buf := postBodyPool.Get().(*bytes.Buffer)
 	defer func() {
 		buf.Reset()
@@ -181,7 +181,7 @@ func postMessage(endpoint string, body interface{}, config *configType) (*batchR
 
 	gzw := gzipWriterPool.Get().(*gzip.Writer)
 	defer func() {
-		gzw.Reset(io.Discard)
+		gzw.Reset(nil)
 		gzipWriterPool.Put(gzw)
 	}()
 	gzw.Reset(buf)
