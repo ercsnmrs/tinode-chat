@@ -157,7 +157,7 @@ All client software has support for [internationalization](docs/translations.md)
 | Spanish | &check; | &check; | &check; | &check; |
 | Thai |   | &check; |   |   |
 | Ukrainian | &check; | &check; | &check; | &check; |
-| Vietnamese | &check; |   |   |   |
+| Vietnamese | &check; | &check; |   |   |
 
 More translations are [welcome](docs/translations.md). In addition to languages listed above, particularly interested in Bengali, Indonesian, Urdu, Japanese, Turkish, Persian.
 
