@@ -8,7 +8,7 @@ Tinode is *not* XMPP/Jabber. It is *not* compatible with XMPP. It's meant as a r
 
 <a href="https://apps.apple.com/us/app/tinode/id1483763538"><img src="docs/app-store.svg" height=36></a> <a href="https://play.google.com/store/apps/details?id=co.tinode.tindroidx"><img src="docs/play-store.svg" height=36></a> <a href="https://web.tinode.co/"><img src="docs/web-app.svg" height=36></a>
 
-[Accorting to creators](https://habr.com/ru/articles/1022914/), Tinode is used as a backend for the [Russian National Messenger Max](https://en.wikipedia.org/wiki/Max_(app)), claiming active users exceeding 40 million.
+[According to its creators](https://habr.com/ru/articles/1022914/), Tinode is used as a backend for the [Russian National Messenger Max](https://en.wikipedia.org/wiki/Max_(app)), claiming active users exceeding 40 million.
 
 ## Why?
 
